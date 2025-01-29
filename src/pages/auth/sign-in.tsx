@@ -1,12 +1,15 @@
 import { z } from 'zod'
+import { toast } from 'sonner'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { Helmet } from 'react-helmet-async'
+import { Link } from 'react-router-dom'
 import { Mail, Lock, Eye, EyeOff } from 'lucide-react'
 
-import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 const signInForm = z.object({
@@ -17,11 +20,21 @@ const signInForm = z.object({
 type SignInForm = z.infer<typeof signInForm>
 
 export function SignIn() {
-  const { register, handleSubmit } = useForm<SignInForm>()
+  const {
+    register,
+    handleSubmit,
+    formState: { isSubmitting },
+  } = useForm<SignInForm>()
   const [showPassword, setShowPassword] = useState(false)
 
-  function handleSignIn(data: SignInForm) {
-    console.log(data)
+  async function handleSignIn(data: SignInForm) {
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 1000))
+
+      toast.success('Login efetuado com sucesso!')
+    } catch {
+      toast.error('Erro ao efetuar login!')
+    }
   }
 
   return (
@@ -48,7 +61,8 @@ export function SignIn() {
                   id="email"
                   type="email"
                   placeholder="Digite seu e-mail"
-                  className="pl-10 mb-2"
+                  className="pl-10 mb-2 bg-gray-100"
+                  required
                   {...register('email')}
                 />
               </div>
@@ -60,7 +74,8 @@ export function SignIn() {
                   id="password"
                   type={showPassword ? 'text' : 'password'}
                   placeholder="Digite sua senha"
-                  className="pl-10"
+                  className="pl-10 bg-gray-100"
+                  required
                   {...register('password')}
                 />
                 <button
@@ -79,11 +94,7 @@ export function SignIn() {
 
             <div className="flex items-center justify-between text-sm">
               <div className="flex items-center gap-2">
-                <input
-                  id="rememberMe"
-                  type="checkbox"
-                  className="h-3 w-3 rounded border-gray-300 text-primary focus:ring-primary"
-                />
+                <Checkbox id="terms1" className="rounded border-gray-300" />
                 <Label
                   className="text-xs text-muted-foreground"
                   htmlFor="rememberMe"
@@ -100,19 +111,16 @@ export function SignIn() {
             </div>
 
             <div className="pt-5">
-              <Button className="w-full" type="submit">
+              <Button disabled={isSubmitting} className="w-full" type="submit">
                 Entrar
               </Button>
             </div>
           </form>
           <div className="text-sm text-center">
             Não tem conta ainda?{' '}
-            <a
-              href="/solicitar-acesso"
-              className="text-primary hover:underline"
-            >
+            <Link to="/sign-up" className="text-primary hover:underline">
               Solicitar Acesso
-            </a>
+            </Link>
           </div>
         </div>
       </div>
